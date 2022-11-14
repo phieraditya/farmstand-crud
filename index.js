@@ -46,8 +46,7 @@ app.post('/farms', async (req, res) => {
 
 // Show detail of one farm
 app.get('/farms/:id', async (req, res) => {
-  const { id } = req.params;
-  const farm = await Farm.findById(id);
+  const farm = await Farm.findById(req.params.id).populate('products');
   res.render('farms/show', { farm });
 });
 
@@ -68,8 +67,7 @@ app.post('/farms/:id/products', async (req, res) => {
   newProduct.farm = farm;
   await farm.save();
   await newProduct.save();
-  // res.redirect(`/products/${newProduct._id}`);
-  res.send(farm);
+  res.redirect(`/farms/${id}`);
 });
 
 // --- PRODUCT ROUTES ---
@@ -98,8 +96,7 @@ app.post('/products', async (req, res) => {
 
 // Show detail of one product
 app.get('/products/:id', async (req, res) => {
-  const { id } = req.params;
-  const product = await Product.findById(id);
+  const product = await Product.findById(req.params.id);
   res.render('products/show', { product });
 });
 
