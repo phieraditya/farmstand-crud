@@ -51,9 +51,10 @@ app.get('/farms/:id', async (req, res) => {
 });
 
 // Get Form to Create New Product in certain farm
-app.get('/farms/:id/products/new', (req, res) => {
+app.get('/farms/:id/products/new', async (req, res) => {
   const { id } = req.params;
-  res.render('products/new', { categories, id });
+  const farm = await Farm.findById(id);
+  res.render('products/new', { categories, farm });
 });
 // Save New Product in certain farm
 app.post('/farms/:id/products', async (req, res) => {
