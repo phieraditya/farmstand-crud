@@ -97,7 +97,11 @@ app.post('/products', async (req, res) => {
 
 // Show detail of one product
 app.get('/products/:id', async (req, res) => {
-  const product = await Product.findById(req.params.id);
+  const product = await Product.findById(req.params.id).populate(
+    'farm',
+    'name'
+  );
+  console.log(product);
   res.render('products/show', { product });
 });
 
