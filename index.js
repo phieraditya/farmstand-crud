@@ -23,6 +23,8 @@ app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 
+const categories = ['fruit', 'vegetable', 'dairy'];
+
 // --- ROUTES ---
 // --- FARM ROUTES ---
 // All Farms
@@ -37,7 +39,6 @@ app.get('/farms/new', (req, res) => {
 });
 // Save New Farm
 app.post('/farms', async (req, res) => {
-  console.log(req.body);
   const newFarm = new Farm(req.body);
   await newFarm.save();
   res.redirect(`/farms`);
@@ -50,9 +51,28 @@ app.get('/farms/:id', async (req, res) => {
   res.render('farms/show', { farm });
 });
 
-// --- PRODUCT ROUTES ---
-const categories = ['fruit', 'vegetable', 'dairy'];
+// Get Form to Create New Product in certain farm
+app.get('/farms/:id/products/new', (req, res) => {
+  const { id } = req.params;
+  res.render('products/new', { categories, id });
+});
+// Save New Product in certain farm
+app.post('/farms/:id/products', async (req, res) => {
+  const { id } = req.params;
+  const farm = await Farm.findById(id);
 
+  const { name, price, category } = req.body;
+  const newProduct = new Product({ name, price, category });
+
+  farm.products.push(newProduct);
+  newProduct.farm = farm;
+  await farm.save();
+  await newProduct.save();
+  // res.redirect(`/products/${newProduct._id}`);
+  res.send(farm);
+});
+
+// --- PRODUCT ROUTES ---
 // All Products or by Category
 app.get('/products', async (req, res) => {
   const { category } = req.query;
