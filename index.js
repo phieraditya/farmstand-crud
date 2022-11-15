@@ -71,6 +71,12 @@ app.post('/farms/:id/products', async (req, res) => {
   res.redirect(`/farms/${id}`);
 });
 
+// Delete of a farm
+app.delete('/farms/:id', async (req, res) => {
+  await Farm.findByIdAndDelete(req.params.id);
+  res.redirect('/farms');
+});
+
 // --- PRODUCT ROUTES ---
 // All Products or by Category
 app.get('/products', async (req, res) => {
@@ -123,8 +129,7 @@ app.put('/products/:id', async (req, res) => {
 
 // Delete of one product
 app.delete('/products/:id', async (req, res) => {
-  const { id } = req.params;
-  await Product.findByIdAndDelete(id);
+  await Product.findByIdAndDelete(req.params.id);
   res.redirect('/products');
 });
 
