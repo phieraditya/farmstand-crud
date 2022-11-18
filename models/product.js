@@ -14,7 +14,7 @@ const productSchema = new Schema({
   category: {
     type: String,
     lowercase: true,
-    enum: ['fruit', 'vegetable', 'dairy'],
+    enum: ['fruit', 'vegetable', 'dairy', 'else'],
   },
   farm: {
     type: Schema.Types.ObjectId,
