@@ -1,60 +1,36 @@
 const express = require('express');
 const router = express.Router();
 
-const Product = require('../models/product');
-const Farm = require('../models/farm');
-
-const categories = ['fruit', 'vegetable', 'dairy', 'else'];
+const {
+  getFarms,
+  formNewFarm,
+  saveNewFarm,
+  showOneFarm,
+  formNewProduct,
+  saveNewProduct,
+  deleteFarm,
+} = require('../controller/farmController');
 
 // --- FARM ROUTES ---
 // All Farms
-router.get('/', async (req, res) => {
-  const farms = await Farm.find();
-  res.render('farms/index', { farms });
-});
+router.get('/', getFarms);
 
 // Get Form to Create New Farm
 router.get('/new', (req, res) => {
   res.render('farms/new');
 });
 // Save New Farm
-router.post('/', async (req, res) => {
-  const newFarm = new Farm(req.body);
-  await newFarm.save();
-  res.redirect(`/farms`);
-});
+router.post('/', saveNewFarm);
 
 // Show detail of one farm
-router.get('/:id', async (req, res) => {
-  const farm = await Farm.findById(req.params.id).populate('products');
-  res.render('farms/show', { farm });
-});
+router.get('/:id', showOneFarm);
 
 // Get Form to Create New Product in certain farm
-router.get('/:id/products/new', async (req, res) => {
-  const { id } = req.params;
-  const farm = await Farm.findById(id);
-  res.render('products/new', { categories, farm });
-});
+router.get('/:id/products/new', formNewProduct);
 // Save New Product in certain farm
-router.post('/:id/products', async (req, res) => {
-  const { id } = req.params;
-  const farm = await Farm.findById(id);
-
-  const { name, price, category } = req.body;
-  const newProduct = new Product({ name, price, category });
-
-  farm.products.push(newProduct);
-  newProduct.farm = farm;
-  await farm.save();
-  await newProduct.save();
-  res.redirect(`/farms/${id}`);
-});
+router.post('/:id/products', saveNewProduct);
 
 // Delete of a farm
-router.delete('/:id', async (req, res) => {
-  await Farm.findByIdAndDelete(req.params.id);
-  res.redirect('/farms');
-});
+router.delete('/:id', deleteFarm);
 
 module.exports = router;
