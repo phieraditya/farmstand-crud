@@ -9,24 +9,14 @@ const {
   deleteProduct,
 } = require('../controller/productController');
 
-const Product = require('../models/product');
-const Farm = require('../models/farm');
+router.route('/').get(getProducts);
 
-const categories = ['fruit', 'vegetable', 'dairy', 'else'];
+router
+  .route('/:id')
+  .get(getOneProduct)
+  .put(updateProduct)
+  .delete(deleteProduct);
 
-// --- PRODUCT ROUTES ---
-// All Products or by Category
-router.get('/', getProducts);
-
-// Show detail of one product
-router.get('/:id', getOneProduct);
-
-// Get Form to Edit of one product
-router.get('/:id/edit', getEditProductForm);
-// Update of one product
-router.put('/:id', updateProduct);
-
-// Delete of one product
-router.delete('/:id', deleteProduct);
+router.route('/:id/edit').get(getEditProductForm);
 
 module.exports = router;
