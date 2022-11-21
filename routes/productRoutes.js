@@ -1,6 +1,14 @@
 const express = require('express');
 const router = express.Router();
 
+const {
+  getProducts,
+  getOneProduct,
+  getEditProductForm,
+  updateProduct,
+  deleteProduct,
+} = require('../controller/productController');
+
 const Product = require('../models/product');
 const Farm = require('../models/farm');
 
@@ -8,58 +16,17 @@ const categories = ['fruit', 'vegetable', 'dairy', 'else'];
 
 // --- PRODUCT ROUTES ---
 // All Products or by Category
-router.get('/', async (req, res) => {
-  const { category } = req.query;
-  if (category) {
-    const products = await Product.find({ category });
-    res.render('products/index', { products, category });
-  } else {
-    const products = await Product.find({});
-    res.render('products/index', { products, category: 'All' });
-  }
-});
-
-// Get Form to Create New Product
-router.get('/new', (req, res) => {
-  res.render('products/new', { categories });
-});
-// Save New Product
-router.post('/', async (req, res) => {
-  const newProduct = new Product(req.body);
-  await newProduct.save();
-  res.redirect(`/products/${newProduct._id}`);
-});
+router.get('/', getProducts);
 
 // Show detail of one product
-router.get('/:id', async (req, res) => {
-  const product = await Product.findById(req.params.id).populate(
-    'farm',
-    'name'
-  );
-  console.log(product);
-  res.render('products/show', { product });
-});
+router.get('/:id', getOneProduct);
 
 // Get Form to Edit of one product
-router.get('/:id/edit', async (req, res) => {
-  const { id } = req.params;
-  const product = await Product.findById(id);
-  res.render('products/edit', { product, categories });
-});
+router.get('/:id/edit', getEditProductForm);
 // Update of one product
-router.put('/:id', async (req, res) => {
-  const { id } = req.params;
-  const product = await Product.findByIdAndUpdate(id, req.body, {
-    runValidators: true,
-    new: true,
-  });
-  res.redirect(`/products/${product._id}`);
-});
+router.put('/:id', updateProduct);
 
 // Delete of one product
-router.delete('/:id', async (req, res) => {
-  await Product.findByIdAndDelete(req.params.id);
-  res.redirect('/products');
-});
+router.delete('/:id', deleteProduct);
 
 module.exports = router;
